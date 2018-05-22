@@ -1,13 +1,9 @@
 import numpy as np
 
-import lightgbm as lgb
 import sklearn.linear_model as lr
-from attrdict import AttrDict
-from catboost import CatBoostClassifier
 from sklearn import ensemble
 from sklearn import svm
 from sklearn.externals import joblib
-from xgboost import XGBClassifier
 
 from steppy.base import BaseTransformer
 from steppy.utils import get_logger
@@ -32,7 +28,7 @@ class SklearnBaseTransformer(BaseTransformer):
 
 
 class SklearnClassifier(SklearnBaseTransformer):
-    RESULT_KEY = 'prediction'
+    RESULT_KEY = 'predicted'
 
     def transform(self, X, y=None, **kwargs):
         prediction = self.estimator.predict_proba(X)
@@ -40,7 +36,7 @@ class SklearnClassifier(SklearnBaseTransformer):
 
 
 class SklearnRegressor(SklearnBaseTransformer):
-    RESULT_KEY = 'prediction'
+    RESULT_KEY = 'predicted'
 
     def transform(self, X, y=None, **kwargs):
         prediction = self.estimator.predict(X)
@@ -63,40 +59,7 @@ class SklearnPipeline(SklearnBaseTransformer):
         return {SklearnPipeline.RESULT_KEY: transformed}
 
 
-class LightGBM(BaseTransformer):
-    def __init__(self, model_params, training_params):
-        self.model_params = model_params
-        self.training_params = AttrDict(training_params)
-        self.evaluation_function = None
-
-    def fit(self, X, y, X_valid, y_valid, feature_names, categorical_features, **kwargs):
-        train = lgb.Dataset(X, label=y,
-                            feature_name=feature_names,
-                            categorical_feature=categorical_features
-                            )
-        valid = lgb.Dataset(X_valid, label=y_valid,
-                            feature_name=feature_names,
-                            categorical_feature=categorical_features
-                            )
-
-        evaluation_results = {}
-        self.estimator = lgb.train(self.model_params,
-                                   train,
-                                   valid_sets=[train, valid],
-                                   valid_names=['train', 'valid'],
-                                   evals_result=evaluation_results,
-                                   num_boost_round=self.training_params.number_boosting_rounds,
-                                   early_stopping_rounds=self.training_params.early_stopping_rounds,
-                                   verbose_eval=10,
-                                   feval=self.evaluation_function)
-        return self
-
-    def transform(self, X, y=None, **kwargs):
-        prediction = self.estimator.predict(X)
-        return {'prediction': prediction}
-
-
-class MultilabelEstimator(BaseTransformer):
+class MultilabelEstimators(BaseTransformer):
     def __init__(self, label_nr, **kwargs):
         self.label_nr = label_nr
         self.estimators = self._get_estimators(**kwargs)
@@ -124,7 +87,7 @@ class MultilabelEstimator(BaseTransformer):
             predictions.append(prediction)
         predictions = np.stack(predictions, axis=0)
         predictions = predictions[:, :, 1].transpose()
-        return {'prediction_probability': predictions}
+        return {'predicted_probability': predictions}
 
     def load(self, filepath):
         params = joblib.load(filepath)
@@ -138,55 +101,42 @@ class MultilabelEstimator(BaseTransformer):
         joblib.dump(params, filepath)
 
 
-class LogisticRegressionMultilabel(MultilabelEstimator):
+class LogisticRegressionMultilabel(MultilabelEstimators):
     @property
     def estimator(self):
         return lr.LogisticRegression
 
 
-class SVCMultilabel(MultilabelEstimator):
+class SVCMultilabel(MultilabelEstimators):
     @property
     def estimator(self):
         return svm.SVC
 
 
-class LinearSVC_proba(svm.LinearSVC):
-    def __platt_func(self, x):
-        return 1 / (1 + np.exp(-x))
-
-    def predict_proba(self, X):
-        f = np.vectorize(self.__platt_func)
-        raw_predictions = self.decision_function(X)
-        platt_predictions = f(raw_predictions).reshape(-1, 1)
-        prob_positive = platt_predictions / platt_predictions.sum(axis=1)[:, None]
-        prob_negative = 1.0 - prob_positive
-        probs = np.hstack([prob_negative, prob_positive])
-        print(prob_positive)
-        return probs
-
-
-class LinearSVCMultilabel(MultilabelEstimator):
+class LinearSVCMultilabel(MultilabelEstimators):
     @property
     def estimator(self):
         return LinearSVC_proba
 
 
-class RandomForestMultilabel(MultilabelEstimator):
+class RandomForestMultilabel(MultilabelEstimators):
     @property
     def estimator(self):
         return ensemble.RandomForestClassifier
 
 
-class CatboostClassifierMultilabel(MultilabelEstimator):
-    @property
-    def estimator(self):
-        return CatBoostClassifier
+class LinearSVC_proba(svm.LinearSVC):
+    def _platt_func(self, x):
+        return 1.0 / (1 + np.exp(-x))
 
-
-class XGBoostClassifierMultilabel(MultilabelEstimator):
-    @property
-    def estimator(self):
-        return XGBClassifier
+    def predict_proba(self, X):
+        f = np.vectorize(self._platt_func)
+        raw_predictions = self.decision_function(X)
+        platt_predictions = f(raw_predictions).reshape(-1, 1)
+        prob_positive = platt_predictions / platt_predictions.sum(axis=1)[:, None]
+        prob_negative = 1.0 - prob_positive
+        probabilities = np.hstack([prob_negative, prob_positive])
+        return probabilities
 
 
 def make_transformer(estimator, mode='classifier'):

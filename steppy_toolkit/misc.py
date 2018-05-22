@@ -1,11 +1,25 @@
 import lightgbm as lgb
 from attrdict import AttrDict
+from catboost import CatBoostClassifier
 from sklearn.externals import joblib
+from xgboost import XGBClassifier
 
 from steppy.base import BaseTransformer
 from steppy.utils import get_logger
 
 logger = get_logger()
+
+
+class CatboostClassifierMultilabel(MultilabelEstimators):
+    @property
+    def estimator(self):
+        return CatBoostClassifier
+
+
+class XGBoostClassifierMultilabel(MultilabelEstimators):
+    @property
+    def estimator(self):
+        return XGBClassifier
 
 
 class LightGBM(BaseTransformer):
@@ -24,17 +38,20 @@ class LightGBM(BaseTransformer):
         return AttrDict({param: value for param, value in self.params.items()
                          if param in self.training_params})
 
-    def fit(self, X, y, X_valid, y_valid, feature_names=None, categorical_features=None, **kwargs):
+    def fit(self,
+            X, y,
+            X_valid, y_valid,
+            feature_names=None,
+            categorical_features=None,
+            **kwargs):
         train = lgb.Dataset(X,
                             label=y,
                             feature_name=feature_names,
-                            categorical_feature=categorical_features
-                            )
+                            categorical_feature=categorical_features)
         valid = lgb.Dataset(X_valid,
                             label=y_valid,
                             feature_name=feature_names,
-                            categorical_feature=categorical_features
-                            )
+                            categorical_feature=categorical_features)
 
         evaluation_results = {}
         self.estimator = lgb.train(self.model_config,
