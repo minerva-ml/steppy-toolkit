@@ -1,13 +1,34 @@
 from setuptools import setup
 
-setup(name='steppy_toolkit',
-      version='0.0.1',
-      description='Set of tools to make your work with Steps faster and more effective.',
+setup(name='steppy-toolkit',
+      packages=['steppy-toolkit'],
+      version='0.1.1',
+      description='Set of tools to make your work with steppy faster and more effective.',
       url='https://github.com/minerva-ml/steppy-toolkit',
-      author='minerva.ml ',
-      author_email=' ml-team@neptune.ml',
+      download_url='https://github.com/minerva-ml/steppy-toolkit/archive/0.1.1.tar.gz',
+      author='Kamil A. Kaczmarek',
+      author_email='kamil.kaczmarek@neptune.ml',
+      keywords=['machine-learning', 'reproducibility', 'pipeline'],
       license='MIT',
-      packages=['steppy_toolkit'],
-      zip_safe=False
-      )
-
+      install_requires=[
+          'tensorflow>=1.8.0',
+          'keras>=2.1.6',
+          'torch>=0.4.0',
+          'torchvision>=0.2.1',
+          'attrdict>=2.0.0',
+          'catboost>=0.8.1.1',
+          'gensim>=3.4.0',
+          'ipython>=6.4.0',
+          'lightgbm>=2.1.1',
+          'nltk>=3.3',
+          'numpy>=1.14.3',
+          'pandas>=0.23.0',
+          'Pillow>=5.1.0',
+          'pydot_ng>=1.0.0',
+          'pytest>=3.6.0',
+          'scikit_learn>=0.19.1',
+          'setuptools>=39.2.0',
+          'steppy>=0.1.1',
+          'xgboost>=0.72'],
+      zip_safe=False,
+      classifiers=[])
