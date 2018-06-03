@@ -1,10 +1,12 @@
-import pytest
-import numpy as np
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.decomposition import PCA
 from pathlib import Path
 
-from steppy_toolkit.sklearn.models import SklearnClassifier, SklearnRegressor, SklearnTransformer
+import numpy as np
+import pytest
+from sklearn.decomposition import PCA
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+
+from steppy_toolkit.sklearn_recipes.models import SklearnClassifier, SklearnRegressor, SklearnTransformer
+
 
 @pytest.fixture()
 def X():

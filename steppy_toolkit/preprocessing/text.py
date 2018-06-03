@@ -9,7 +9,6 @@ from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tokenize import TweetTokenizer
 from sklearn.externals import joblib
-
 from steppy.base import BaseTransformer
 
 lem = WordNetLemmatizer()
