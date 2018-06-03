@@ -1,6 +1,6 @@
 from setuptools import setup
 
-setup(name='toolkit',
+setup(name='steppy-toolkit',
       packages=['toolkit'],
       version='0.1.1',
       description='Set of tools to make your work with steppy faster and more effective.',
