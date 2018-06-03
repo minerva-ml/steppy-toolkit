@@ -6,8 +6,8 @@ from torch.optim.lr_scheduler import ExponentialLR
 
 from steppy.utils import get_logger
 
-from steppy_toolkit.pytorch.utils import Averager, save_model
-from steppy_toolkit.pytorch.validation import score_model
+from steppy_toolkit.pytorch_recipes.utils import Averager, save_model
+from steppy_toolkit.pytorch_recipes.validation import score_model
 
 logger = get_logger()
 

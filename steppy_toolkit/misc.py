@@ -7,7 +7,7 @@ from xgboost import XGBClassifier
 from steppy.base import BaseTransformer
 from steppy.utils import get_logger
 
-from .sklearn.models import MultilabelEstimators
+from .sklearn_recipes.models import MultilabelEstimators
 
 logger = get_logger()
 
