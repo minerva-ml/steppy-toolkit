@@ -3,7 +3,7 @@ import warnings
 import torch
 import torch.nn as nn
 
-from steppy_toolkit.pytorch_recipes.utils import get_downsample_pad, get_upsample_pad
+from toolkit.pytorch_recipes.utils import get_downsample_pad, get_upsample_pad
 
 
 class UNet(nn.Module):

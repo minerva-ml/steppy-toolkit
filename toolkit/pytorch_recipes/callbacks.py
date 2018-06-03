@@ -5,8 +5,8 @@ from deepsense import neptune
 from steppy.utils import get_logger
 from torch.optim.lr_scheduler import ExponentialLR
 
-from steppy_toolkit.pytorch_recipes.utils import Averager, save_torch_model
-from steppy_toolkit.pytorch_recipes.validation import score_model
+from toolkit.pytorch_recipes.utils import Averager, save_torch_model
+from toolkit.pytorch_recipes.validation import score_model
 
 logger = get_logger()
 

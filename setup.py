@@ -1,7 +1,7 @@
 from setuptools import setup
 
-setup(name='steppy-toolkit',
-      packages=['steppy-toolkit'],
+setup(name='toolkit',
+      packages=['toolkit'],
       version='0.1.1',
       description='Set of tools to make your work with steppy faster and more effective.',
       url='https://github.com/minerva-ml/steppy-toolkit',
