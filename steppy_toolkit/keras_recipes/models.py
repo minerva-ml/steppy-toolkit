@@ -1,7 +1,6 @@
 import shutil
 
 from keras.models import load_model
-
 from steppy.base import BaseTransformer
 
 from steppy_toolkit.keras_recipes.architectures import vdcnn, scnn, dpcnn, cudnn_gru, cudnn_lstm

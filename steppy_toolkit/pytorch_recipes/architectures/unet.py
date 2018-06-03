@@ -1,6 +1,7 @@
+import warnings
+
 import torch
 import torch.nn as nn
-import warnings
 
 from steppy_toolkit.pytorch_recipes.utils import get_downsample_pad, get_upsample_pad
 

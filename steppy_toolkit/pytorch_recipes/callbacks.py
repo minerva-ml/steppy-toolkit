@@ -2,11 +2,10 @@ import os
 from datetime import datetime, timedelta
 
 from deepsense import neptune
+from steppy.utils import get_logger
 from torch.optim.lr_scheduler import ExponentialLR
 
-from steppy.utils import get_logger
-
-from steppy_toolkit.pytorch_recipes.utils import Averager, save_model
+from steppy_toolkit.pytorch_recipes.utils import Averager, save_torch_model
 from steppy_toolkit.pytorch_recipes.validation import score_model
 
 logger = get_logger()
@@ -273,7 +272,7 @@ class ModelCheckpoint(Callback):
             if (self.minimize and loss_sum < self.best_score) or (not self.minimize and loss_sum > self.best_score) or (
                     self.epoch_id == 0):
                 self.best_score = loss_sum
-                save_model(self.model, self.filepath)
+                save_torch_model(self.model, self.filepath)
                 logger.info('epoch {0} model saved to {1}'.format(self.epoch_id, self.filepath))
 
         self.epoch_id += 1

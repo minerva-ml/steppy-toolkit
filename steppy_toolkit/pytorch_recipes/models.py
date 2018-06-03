@@ -1,15 +1,14 @@
-import numpy as np
 import os
 import shutil
 from functools import partial
 
+import numpy as np
 import torch
 import torch.nn as nn
-from torch.autograd import Variable
-from torch.nn import init
-
 from steppy.base import BaseTransformer
 from steppy.utils import get_logger
+from torch.autograd import Variable
+from torch.nn import init
 
 from steppy_toolkit.pytorch_recipes.utils import save_model
 

@@ -1,4 +1,5 @@
 steppy
+neptune-cli
 tensorflow==1.8.0
 keras==2.1.6
 torch==0.4.0
