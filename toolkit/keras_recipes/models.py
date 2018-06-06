@@ -40,7 +40,7 @@ class KerasModelTransformer(BaseTransformer):
     def _build_loss(self, **kwargs):
         raise NotImplementedError
 
-    def save(self, filepath):
+    def persist(self, filepath):
         checkpoint_callback = self.callbacks_config.get('model_checkpoint')
         if checkpoint_callback:
             checkpoint_filepath = checkpoint_callback['filepath']
