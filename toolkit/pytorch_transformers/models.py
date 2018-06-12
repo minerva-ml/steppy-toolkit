@@ -10,7 +10,7 @@ from steppy.utils import get_logger
 from torch.autograd import Variable
 from torch.nn import init
 
-from toolkit.pytorch_recipes.utils import save_model
+from toolkit.pytorch_transformers.utils import save_model
 
 logger = get_logger()
 

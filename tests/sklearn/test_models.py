@@ -5,7 +5,7 @@ import pytest
 from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 
-from toolkit.sklearn_recipes.models import SklearnClassifier, SklearnRegressor, SklearnTransformer
+from toolkit.sklearn_transformers.models import SklearnClassifier, SklearnRegressor, SklearnTransformer
 
 
 @pytest.fixture()

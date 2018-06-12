@@ -3,8 +3,8 @@ import shutil
 from keras.models import load_model
 from steppy.base import BaseTransformer
 
-from toolkit.keras_recipes.architectures import vdcnn, scnn, dpcnn, cudnn_gru, cudnn_lstm
-from toolkit.keras_recipes.contrib import AttentionWeightedAverage
+from toolkit.keras_transformers.architectures import vdcnn, scnn, dpcnn, cudnn_gru, cudnn_lstm
+from toolkit.keras_transformers.contrib import AttentionWeightedAverage
 
 
 class KerasModelTransformer(BaseTransformer):
