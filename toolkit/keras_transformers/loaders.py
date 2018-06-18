@@ -6,6 +6,7 @@ from steppy.base import BaseTransformer
 
 class Tokenizer(BaseTransformer):
     def __init__(self, char_level, maxlen, num_words):
+        super().__init__()
         self.char_level = char_level
         self.maxlen = maxlen
         self.num_words = num_words
@@ -40,7 +41,7 @@ class Tokenizer(BaseTransformer):
         self.tokenizer = object_pickle['tokenizer']
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         object_pickle = {'char_level': self.char_level,
                          'maxlen': self.maxlen,
                          'num_words': self.num_words,

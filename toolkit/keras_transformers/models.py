@@ -3,17 +3,13 @@ import shutil
 from keras.models import load_model
 from steppy.base import BaseTransformer
 
-from toolkit.keras_recipes.architectures import vdcnn, scnn, dpcnn, cudnn_gru, cudnn_lstm
-from toolkit.keras_recipes.contrib import AttentionWeightedAverage
+from toolkit.keras_transformers.architectures import vdcnn, scnn, dpcnn, cudnn_gru, cudnn_lstm
+from toolkit.keras_transformers.contrib import AttentionWeightedAverage
 
 
 class KerasModelTransformer(BaseTransformer):
-    """
-    Todo:
-        load the best model at the end of the fit and save it
-    """
-
     def __init__(self, architecture_config, training_config, callbacks_config):
+        super().__init__()
         self.architecture_config = architecture_config
         self.training_config = training_config
         self.callbacks_config = callbacks_config
@@ -40,7 +36,7 @@ class KerasModelTransformer(BaseTransformer):
     def _build_loss(self, **kwargs):
         raise NotImplementedError
 
-    def save(self, filepath):
+    def persist(self, filepath):
         checkpoint_callback = self.callbacks_config.get('model_checkpoint')
         if checkpoint_callback:
             checkpoint_filepath = checkpoint_callback['filepath']

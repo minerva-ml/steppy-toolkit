@@ -5,7 +5,7 @@ import pytest
 from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 
-from toolkit.sklearn_recipes.models import SklearnClassifier, SklearnRegressor, SklearnTransformer
+from toolkit.sklearn_transformers.models import SklearnClassifier, SklearnRegressor, SklearnTransformer
 
 
 @pytest.fixture()
@@ -53,13 +53,13 @@ def test_fit_transform(X, y, sklearn_class, steps_wrapper, transform_method):
         (PCA, SklearnTransformer),
     ]
 )
-def test_save_load(X, y, tmpdir, sklearn_class, steps_wrapper):
+def test_persisting_and_loading(X, y, tmp_directory, sklearn_class, steps_wrapper):
     tr = steps_wrapper(sklearn_class())
     tr.fit(X, y)
     before = tr.transform(X)[steps_wrapper.RESULT_KEY]
-    print("Tmp dir:'{}'".format(tmpdir))
-    path = str(Path(str(tmpdir)) / 'transformer.tmp')
-    tr.save(path)
+    print("Temporary directory: '{}'".format(tmp_directory))
+    path = str(Path(str(tmp_directory)) / 'transformer.tmp')
+    tr.persist(path)
     loaded_tr = steps_wrapper(sklearn_class())
     loaded_tr.load(path)
     after = loaded_tr.transform(X)[steps_wrapper.RESULT_KEY]

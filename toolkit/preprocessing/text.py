@@ -24,6 +24,7 @@ with open('steps/resources/apostrophes.json', 'r') as f:
 
 class WordListFilter(BaseTransformer):
     def __init__(self, word_list_filepath):
+        super().__init__()
         self.word_set = self._read_data(word_list_filepath)
 
     def transform(self, X):
@@ -48,7 +49,7 @@ class WordListFilter(BaseTransformer):
     def load(self, filepath):
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         joblib.dump({}, filepath)
 
 
@@ -62,6 +63,7 @@ class TextCleaner(BaseTransformer):
                  deduplication_threshold,
                  apostrophes,
                  use_stopwords):
+        super().__init__()
         self.drop_punctuation = drop_punctuation
         self.drop_newline = drop_newline
         self.drop_multispaces = drop_multispaces
@@ -142,7 +144,7 @@ class TextCleaner(BaseTransformer):
         self.fill_na_with = params['fill_na_with']
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         params = {'drop_punctuation': self.drop_punctuation,
                   'all_lower_case': self.all_lower_case,
                   'fill_na_with': self.fill_na_with,
@@ -192,7 +194,7 @@ class TextCounter(BaseTransformer):
     def load(self, filepath):
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         joblib.dump({}, filepath)
 
 
@@ -225,8 +227,8 @@ def space_count(x):
 
 
 def punctuation_count(x):
-    return occurence(x, string.punctuation)
+    return occurrence(x, string.punctuation)
 
 
-def occurence(s1, s2):
+def occurrence(s1, s2):
     return sum([1 for x in s1 if x in s2])

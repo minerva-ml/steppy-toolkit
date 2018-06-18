@@ -13,13 +13,14 @@ logger = get_logger()
 
 class SklearnBaseTransformer(BaseTransformer):
     def __init__(self, estimator):
+        super().__init__()
         self.estimator = estimator
 
     def fit(self, X, y, **kwargs):
         self.estimator.fit(X, y)
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         joblib.dump(self.estimator, filepath)
 
     def load(self, filepath):
@@ -61,6 +62,7 @@ class SklearnPipeline(SklearnBaseTransformer):
 
 class MultilabelEstimators(BaseTransformer):
     def __init__(self, label_nr, **kwargs):
+        super().__init__()
         self.label_nr = label_nr
         self.estimators = self._get_estimators(**kwargs)
 
@@ -95,7 +97,7 @@ class MultilabelEstimators(BaseTransformer):
         self.estimators = params['estimators']
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         params = {'label_nr': self.label_nr,
                   'estimators': self.estimators}
         joblib.dump(params, filepath)

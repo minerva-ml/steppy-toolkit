@@ -13,12 +13,13 @@ class ClassPredictor(BaseTransformer):
     def load(self, filepath):
         return ClassPredictor()
 
-    def save(self, filepath):
+    def persist(self, filepath):
         joblib.dump({}, filepath)
 
 
 class PredictionAverage(BaseTransformer):
     def __init__(self, weights=None):
+        super().__init__()
         self.weights = weights
 
     def transform(self, prediction_proba_list):
@@ -35,7 +36,7 @@ class PredictionAverage(BaseTransformer):
         self.weights = params['weights']
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         joblib.dump({'weights': self.weights}, filepath)
 
     def _reshape_weights(self, prediction_shape):
@@ -55,7 +56,7 @@ class PredictionAverageUnstack(BaseTransformer):
     def load(self, filepath):
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         joblib.dump({}, filepath)
 
 
