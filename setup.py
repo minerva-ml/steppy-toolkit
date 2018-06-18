@@ -2,10 +2,10 @@ from setuptools import setup, find_packages
 
 setup(name='steppy-toolkit',
       packages=find_packages(),
-      version='0.1.3',
+      version='0.1.4',
       description='Set of tools to make your work with steppy faster and more effective.',
       url='https://github.com/minerva-ml/steppy-toolkit',
-      download_url='https://github.com/minerva-ml/steppy-toolkit/archive/0.1.3.tar.gz',
+      download_url='https://github.com/minerva-ml/steppy-toolkit/archive/0.1.4.tar.gz',
       author='Kamil A. Kaczmarek',
       author_email='kamil.kaczmarek@neptune.ml',
       keywords=['machine-learning', 'reproducibility', 'pipeline', 'tools'],
