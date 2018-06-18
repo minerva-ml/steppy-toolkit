@@ -61,14 +61,21 @@ class LightGBM(BaseTransformer):
                                                                                                           type(target)))
 
     def fit(self,
-            X, y,
-            X_valid, y_valid,
+            X,
+            y,
+            X_valid,
+            y_valid,
             feature_names='auto',
             categorical_features='auto',
             **kwargs):
-
         y = self._check_target_shape_and_type(y, 'y')
         y_valid = self._check_target_shape_and_type(y_valid, 'y_valid')
+        evaluation_results = {}
+
+        logger.info('LightGBM, train data shape        {}'.format(X.shape))
+        logger.info('LightGBM, validation data shape   {}'.format(X_valid.shape))
+        logger.info('LightGBM, train labels shape      {}'.format(y.shape))
+        logger.info('LightGBM, validation labels shape {}'.format(y_valid.shape))
 
         data_train = lgb.Dataset(data=X,
                                  label=y,
@@ -81,13 +88,6 @@ class LightGBM(BaseTransformer):
                                  categorical_feature=categorical_features,
                                  **kwargs)
 
-        logger.info('LightGBM, training data has {!s} examples.'.format(data_train.num_data()))
-        logger.info('LightGBM, training data has {!s} features.'.format(data_train.num_feature()))
-
-        logger.info('LightGBM, validation data has {!s} examples.'.format(data_valid.num_data()))
-        logger.info('LightGBM, validation data has {!s} features.'.format(data_train.num_feature()))
-
-        evaluation_results = {}
         self.estimator = lgb.train(self.model_config,
                                    data_train,
                                    feature_name=feature_names,
