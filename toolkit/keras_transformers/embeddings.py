@@ -8,6 +8,7 @@ from steppy.base import BaseTransformer
 
 class EmbeddingsMatrix(BaseTransformer):
     def __init__(self, pretrained_filepath, max_features, embedding_size):
+        super().__init__()
         self.pretrained_filepath = pretrained_filepath
         self.max_features = max_features
         self.embedding_size = embedding_size
@@ -22,7 +23,7 @@ class EmbeddingsMatrix(BaseTransformer):
     def _get_embedding_matrix(self, tokenizer):
         return NotImplementedError
 
-    def save(self, filepath):
+    def persist(self, filepath):
         joblib.dump(self.embedding_matrix, filepath)
 
     def load(self, filepath):

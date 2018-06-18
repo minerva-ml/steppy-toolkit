@@ -8,12 +8,8 @@ from toolkit.keras_transformers.contrib import AttentionWeightedAverage
 
 
 class KerasModelTransformer(BaseTransformer):
-    """
-    Todo:
-        load the best model at the end of the fit and save it
-    """
-
     def __init__(self, architecture_config, training_config, callbacks_config):
+        super().__init__()
         self.architecture_config = architecture_config
         self.training_config = training_config
         self.callbacks_config = callbacks_config

@@ -96,7 +96,7 @@ class MetadataImageLoader(BaseTransformer):
         self.loader_params = params['loader_params']
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         params = {'loader_params': self.loader_params}
         joblib.dump(params, filepath)
 

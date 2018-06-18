@@ -8,8 +8,11 @@ from steppy.base import BaseTransformer
 
 class XYSplit(BaseTransformer):
     def __init__(self, x_columns, y_columns):
+        super().__init__()
         self.x_columns = x_columns
         self.y_columns = y_columns
+        self.columns_to_get = None
+        self.target_columns = None
 
     def transform(self, meta, train_mode):
         X = meta[self.x_columns].values
@@ -27,15 +30,16 @@ class XYSplit(BaseTransformer):
         self.target_columns = params['y_columns']
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         params = {'x_columns': self.x_columns,
                   'y_columns': self.y_columns
                   }
         joblib.dump(params, filepath)
 
 
-class TfidfVectorizer(BaseTransformer):
+class TfIdfVectorizer(BaseTransformer):
     def __init__(self, **kwargs):
+        super().__init__()
         self.vectorizer = text.TfidfVectorizer(**kwargs)
 
     def fit(self, text):
@@ -49,12 +53,13 @@ class TfidfVectorizer(BaseTransformer):
         self.vectorizer = joblib.load(filepath)
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         joblib.dump(self.vectorizer, filepath)
 
 
 class TruncatedSVD(BaseTransformer):
     def __init__(self, **kwargs):
+        super().__init__()
         self.truncated_svd = decomposition.TruncatedSVD(**kwargs)
 
     def fit(self, features):
@@ -68,12 +73,13 @@ class TruncatedSVD(BaseTransformer):
         self.truncated_svd = joblib.load(filepath)
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         joblib.dump(self.truncated_svd, filepath)
 
 
-class Normalizer(BaseTransformer):
+class Steppy_Normalizer(BaseTransformer):
     def __init__(self):
+        super().__init__()
         self.normalizer = Normalizer()
 
     def fit(self, X):
@@ -88,12 +94,13 @@ class Normalizer(BaseTransformer):
         self.normalizer = joblib.load(filepath)
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         joblib.dump(self.normalizer, filepath)
 
 
-class MinMaxScaler(BaseTransformer):
+class Steppy_MinMaxScaler(BaseTransformer):
     def __init__(self):
+        super().__init__()
         self.minmax_scaler = MinMaxScaler()
 
     def fit(self, X):
@@ -108,17 +115,18 @@ class MinMaxScaler(BaseTransformer):
         self.minmax_scaler = joblib.load(filepath)
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         joblib.dump(self.minmax_scaler, filepath)
 
 
 class MinMaxScalerMultilabel(BaseTransformer):
     def __init__(self):
+        super().__init__()
         self.minmax_scalers = []
 
     def fit(self, X):
         for i in range(X.shape[1]):
-            minmax_scaler = MinMaxScaler()
+            minmax_scaler = Steppy_MinMaxScaler()
             minmax_scaler.fit(X[:, i, :])
             self.minmax_scalers.append(minmax_scaler)
         return self
@@ -132,5 +140,5 @@ class MinMaxScalerMultilabel(BaseTransformer):
         self.minmax_scalers = joblib.load(filepath)
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         joblib.dump(self.minmax_scalers, filepath)

@@ -1,7 +1,7 @@
 import torch
 
 
-def save_torch_model(model, path):
+def persist_torch_model(model, path):
     model.eval()
     if torch.cuda.is_available():
         model.cpu()

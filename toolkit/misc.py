@@ -110,5 +110,5 @@ class LightGBM(BaseTransformer):
         self.estimator = joblib.load(filepath)
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         joblib.dump(self.estimator, filepath)

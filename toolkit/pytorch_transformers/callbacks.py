@@ -5,7 +5,7 @@ from deepsense import neptune
 from steppy.utils import get_logger
 from torch.optim.lr_scheduler import ExponentialLR
 
-from toolkit.pytorch_transformers.utils import Averager, save_torch_model
+from toolkit.pytorch_transformers.utils import Averager, persist_torch_model
 from toolkit.pytorch_transformers.validation import score_model
 
 logger = get_logger()
@@ -272,8 +272,8 @@ class ModelCheckpoint(Callback):
             if (self.minimize and loss_sum < self.best_score) or (not self.minimize and loss_sum > self.best_score) or (
                     self.epoch_id == 0):
                 self.best_score = loss_sum
-                save_torch_model(self.model, self.filepath)
-                logger.info('epoch {0} model saved to {1}'.format(self.epoch_id, self.filepath))
+                persist_torch_model(self.model, self.filepath)
+                logger.info('epoch {0} model persisted to {1}'.format(self.epoch_id, self.filepath))
 
         self.epoch_id += 1
 

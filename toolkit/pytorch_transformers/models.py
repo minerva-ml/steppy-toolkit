@@ -10,13 +10,16 @@ from steppy.utils import get_logger
 from torch.autograd import Variable
 from torch.nn import init
 
-from toolkit.pytorch_transformers.utils import save_model
+from toolkit.pytorch_transformers.utils import persist_torch_model
 
 logger = get_logger()
 
 
 class Model(BaseTransformer):
-    def __init__(self, architecture_config, training_config, callbacks_config):
+    def __init__(self,
+                 architecture_config,
+                 training_config,
+                 callbacks_config):
         super().__init__()
         self.architecture_config = architecture_config
         self.training_config = training_config
@@ -153,16 +156,16 @@ class Model(BaseTransformer):
             self.model.load_state_dict(torch.load(filepath, map_location=lambda storage, loc: storage))
         return self
 
-    def save(self, filepath):
+    def persist(self, filepath):
         checkpoint_callback = self.callbacks_config.get('model_checkpoint')
         if checkpoint_callback:
             checkpoint_filepath = checkpoint_callback['filepath']
             if os.path.exists(checkpoint_filepath):
                 shutil.copyfile(checkpoint_filepath, filepath)
             else:
-                save_model(self.model, filepath)
+                persist_torch_model(self.model, filepath)
         else:
-            save_model(self.model, filepath)
+            persist_torch_model(self.model, filepath)
 
 
 class PyTorchBasic(nn.Module):
@@ -191,9 +194,9 @@ def init_weights_xavier(model):
     if isinstance(model, nn.Conv2d):
         init.xavier_normal(model.weight)
         init.constant(model.bias, 0)
-        
+
+
 def init_weights_he(model):
     if isinstance(model, nn.Conv2d):
         init.kaiming_normal(model.weight)
         init.constant(model.bias, 0)
-        
