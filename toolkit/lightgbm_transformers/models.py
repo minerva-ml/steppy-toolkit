@@ -2,27 +2,11 @@ import lightgbm as lgb
 import numpy as np
 import pandas as pd
 from attrdict import AttrDict
-from catboost import CatBoostClassifier
 from sklearn.externals import joblib
 from steppy.base import BaseTransformer
 from steppy.utils import get_logger
-from xgboost import XGBClassifier
-
-from .sklearn_transformers.models import MultilabelEstimators
 
 logger = get_logger()
-
-
-class CatboostClassifierMultilabel(MultilabelEstimators):
-    @property
-    def estimator(self):
-        return CatBoostClassifier
-
-
-class XGBoostClassifierMultilabel(MultilabelEstimators):
-    @property
-    def estimator(self):
-        return XGBClassifier
 
 
 class LightGBM(BaseTransformer):

@@ -1,35 +1,36 @@
 from setuptools import setup, find_packages
 
+long_description = '''
+Steppy-toolkit is complementary to the steppy library.
+
+The goal of this package is to provide data scientist
+with curated collection of highly parameterizable implementations of neural networks
+together with a number of pre- and post-processing routines.
+
+Steppy-toolkit offers implementations in popular frameworks, such as PyTorch, Keras and scikit-learn.
+
+Steppy-toolkit is compatible with Python>=3.5
+and is distributed under the MIT license.
+'''
+
 setup(name='steppy-toolkit',
       packages=find_packages(),
-      version='0.1.4',
+      version='0.1.6',
       description='Set of tools to make your work with steppy faster and more effective.',
+      long_description=long_description,
       url='https://github.com/minerva-ml/steppy-toolkit',
-      download_url='https://github.com/minerva-ml/steppy-toolkit/archive/0.1.4.tar.gz',
-      author='Kamil A. Kaczmarek',
-      author_email='kamil.kaczmarek@neptune.ml',
+      download_url='https://github.com/minerva-ml/steppy-toolkit/archive/0.1.6.tar.gz',
+      author='Kamil A. Kaczmarek, Jakub Czakon',
+      author_email='kamil.kaczmarek@neptune.ml, jakub.czakon@neptune.ml',
       keywords=['machine-learning', 'reproducibility', 'pipeline', 'tools'],
       license='MIT',
       install_requires=[
           'steppy>=0.1.4',
-          'neptune-cli>=2.8.4',
-          'tensorflow>=1.8.0',
-          'keras>=2.1.6',
-          'torch>=0.4.0',
-          'torchvision>=0.2.1',
+          'neptune-cli>=2.8.5',
           'attrdict>=2.0.0',
-          'catboost>=0.8.1.1',
-          'gensim>=3.4.0',
-          'ipython>=6.4.0',
-          'lightgbm>=2.1.1',
-          'nltk>=3.3',
-          'numpy>=1.14.3',
+          'numpy>=1.14.0',
           'pandas>=0.23.0',
-          'Pillow>=5.1.0',
-          'pydot_ng>=1.0.0',
           'pytest>=3.6.0',
-          'scikit_learn>=0.19.1',
-          'setuptools>=39.2.0',
-          'xgboost>=0.72'],
+          'setuptools>=39.2.0'],
       zip_safe=False,
       classifiers=[])
