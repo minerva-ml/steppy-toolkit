@@ -16,7 +16,7 @@ class SklearnBaseTransformer(BaseTransformer):
         super().__init__()
         self.estimator = estimator
 
-    def fit(self, X, y, **kwargs):
+    def fit(self, X, y=None, **kwargs):
         self.estimator.fit(X, y)
         return self
 
