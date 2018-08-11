@@ -15,11 +15,11 @@ and is distributed under the MIT license.
 
 setup(name='steppy-toolkit',
       packages=find_packages(),
-      version='0.1.7',
+      version='0.1.8',
       description='Set of tools to make your work with steppy faster and more effective.',
       long_description=long_description,
       url='https://github.com/minerva-ml/steppy-toolkit',
-      download_url='https://github.com/minerva-ml/steppy-toolkit/archive/0.1.7.tar.gz',
+      download_url='https://github.com/minerva-ml/steppy-toolkit/archive/0.1.8.tar.gz',
       author='Kamil A. Kaczmarek, Jakub Czakon',
       author_email='kamil.kaczmarek@neptune.ml, jakub.czakon@neptune.ml',
       keywords=['machine-learning', 'reproducibility', 'pipeline', 'tools'],
