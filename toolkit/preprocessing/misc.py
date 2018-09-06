@@ -142,3 +142,82 @@ class MinMaxScalerMultilabel(BaseTransformer):
 
     def persist(self, filepath):
         joblib.dump(self.minmax_scalers, filepath)
+
+
+class FillNan(BaseTransformer):
+    def __init__(self, fill_method='zero', fill_missing=True, **kwargs):
+        super().__init__()
+        self.fill_missing = fill_missing
+        self.filler = SimpleFill(fill_method)
+
+    def transform(self, X):
+        if self.fill_missing:
+            X = self.filler.complete(X)
+        return {'X': X}
+
+    def load(self, filepath):
+        self.filler = joblib.load(filepath)
+        return self
+
+    def persist(self, filepath):
+        joblib.dump(self.filler, filepath)
+
+
+class CategoricalEncoder(BaseTransformer):
+    def __init__(self):
+        super().__init__()
+        self.encoder_class = ce.OrdinalEncoder
+        self.categorical_encoder = None
+
+    def fit(self, X):
+        self.categorical_encoder = self.encoder_class(cols=list(X))
+        self.categorical_encoder.fit(X)
+        return self
+
+    def transform(self, X):
+        X = self.categorical_encoder.transform(X)
+        return {'categorical_features': X}
+
+    def load(self, filepath):
+        self.categorical_encoder = joblib.load(filepath)
+        return self
+
+    def persist(self, filepath):
+        joblib.dump(self.categorical_encoder, filepath)
+
+
+class GroupbyAggregate(BaseTransformer):
+    def __init__(self, id_column, groupby_aggregations):
+        super().__init__()
+        self.id_column = id_column
+        self.groupby_aggregations = groupby_aggregations
+
+    def fit(self, X):
+        features = pd.DataFrame({self.id_column: X[self.id_column].unique()})
+        for groupby_cols, specs in self.groupby_aggregations:
+            group_object = X.groupby(groupby_cols)
+            for select, agg in specs:
+                groupby_aggregate_name = self._create_colname_from_specs(groupby_cols, select, agg)
+                features = features.merge(group_object[select]
+                                          .agg(agg)
+                                          .reset_index()
+                                          .rename(index=str,
+                                                  columns={select: groupby_aggregate_name})
+                                          [groupby_cols + [groupby_aggregate_name]],
+                                          on=groupby_cols,
+                                          how='left')
+        self.features = features
+        return self
+
+    def transform(self, X):
+        return {'numerical_features': self.features}
+
+    def load(self, filepath):
+        self.features = joblib.load(filepath)
+        return self
+
+    def persist(self, filepath):
+        joblib.dump(self.features, filepath)
+
+    def _create_colname_from_specs(self, groupby_cols, select, agg):
+        return '{}_{}_{}'.format('_'.join(groupby_cols), agg, select)
