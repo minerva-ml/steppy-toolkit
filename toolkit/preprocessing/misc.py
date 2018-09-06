@@ -2,6 +2,9 @@ import sklearn.decomposition as decomposition
 from sklearn.externals import joblib
 from sklearn.feature_extraction import text
 from sklearn.preprocessing import Normalizer, MinMaxScaler
+from fancyimpute import SimpleFill
+import category_encoders as ce
+import pandas as pd
 
 from steppy.base import BaseTransformer
 
