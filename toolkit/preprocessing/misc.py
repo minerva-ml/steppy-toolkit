@@ -150,11 +150,25 @@ class MinMaxScalerMultilabel(BaseTransformer):
 
 class FillNan(BaseTransformer):
     def __init__(self, fill_method='zero', fill_missing=True, **kwargs):
+        """Imputs NaN's using various filling methods like mean, zero, median, min, random
+
+
+        Args:
+            fill_method: How NaN's will be exchanged. Possible values: 'mean', 'zero', 'median', 'min', 'random'
+            fill_missing: If True, transformer will fill NaN values by filling method
+        """
         super().__init__()
         self.fill_missing = fill_missing
         self.filler = SimpleFill(fill_method)
 
     def transform(self, X):
+        """
+        Args:
+            X: DataFrame with NaN's
+        Returns:
+            Dictionary with one key - 'X' corresponding to given DataFrame but without nan's
+
+        """
         if self.fill_missing:
             X = self.filler.complete(X)
         return {'X': X}
@@ -169,16 +183,27 @@ class FillNan(BaseTransformer):
 
 class CategoricalEncoder(BaseTransformer):
     def __init__(self):
+        """Encode features to categorical type"""
         super().__init__()
         self.encoder_class = ce.OrdinalEncoder
         self.categorical_encoder = None
 
     def fit(self, X):
+        """
+        Args:
+            X: DataFrame of categorical features to encode
+        """
         self.categorical_encoder = self.encoder_class(cols=list(X))
         self.categorical_encoder.fit(X)
         return self
 
     def transform(self, X):
+        """
+        Args:
+            X: DataFrame of categorical features to encode
+        Returns:
+            Dictionary with one key - 'categorical_features' corresponding to encoded features form X
+        """
         X = self.categorical_encoder.transform(X)
         return {'categorical_features': X}
 
@@ -192,6 +217,28 @@ class CategoricalEncoder(BaseTransformer):
 
 class GroupbyAggregate(BaseTransformer):
     def __init__(self, id_column, groupby_aggregations):
+        """Group and aggregate features by specified configuration
+
+
+        Args:
+            id_column: Column with id's which will be preprocessed
+            groupby_aggregations: list of tuples
+
+        Example
+            groupby_aggregations = [(['f0'], [('f2', 'min'),
+                                              ('f2', 'median')]),
+                                    (['f0', 'f1'], [('f2', 'mean'),
+                                                    ('f2', 'max'),
+                                                    ('f2', 'kurt')])]
+            X = np.array([[0, 0, 0],
+                          [0, 0, 1],
+                          [0, 1, 0]])
+            X = pd.DataFrame(X)
+            X.columns = ['f0', 'f1', 'f2']
+
+            tr = GroupbyAggregate(list(range(3)), groupby_aggregations)
+            aggregations = tr.fit_transform(X)
+        """
         super().__init__()
         self.id_column = id_column
         self.groupby_aggregations = groupby_aggregations
@@ -227,11 +274,28 @@ class GroupbyAggregate(BaseTransformer):
         return '{}_{}_{}'.format('_'.join(groupby_cols), agg, select)
 
 class FeatureJoiner(BaseTransformer):
+    """Concatenate all features to one DataFrame of given id_column
+
+    Args:
+        id_column: Column with id's which will be preprocessed
+    """
+
     def __init__(self, id_column):
         super().__init__()
         self.id_column = id_column
 
     def transform(self, numerical_feature_list, categorical_feature_list):
+        """
+        Args:
+            numerical_feature_list: list of numerical features
+            categorical_feature_list: list of categorical features
+
+        Returns:
+            Dictionary with following keys:
+                features: DataFrame with concatenated features
+                feature_names: list of features names
+                categorical_features: list of categorical feature names
+        """
         features = numerical_feature_list + categorical_feature_list
         for feature in features:
             feature = self._format_target(feature)
