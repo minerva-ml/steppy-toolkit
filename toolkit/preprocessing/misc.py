@@ -224,3 +224,37 @@ class GroupbyAggregate(BaseTransformer):
 
     def _create_colname_from_specs(self, groupby_cols, select, agg):
         return '{}_{}_{}'.format('_'.join(groupby_cols), agg, select)
+
+class FeatureJoiner(BaseTransformer):
+    def __init__(self, id_column):
+        super().__init__()
+        self.id_column = id_column
+
+    def transform(self, numerical_feature_list, categorical_feature_list):
+        features = numerical_feature_list + categorical_feature_list
+        for feature in features:
+            feature = self._format_target(feature)
+            feature.set_index(self.id_column, drop=True, inplace=True)
+        features = pd.concat(features, axis=1).astype(np.float32).reset_index()
+
+        outputs = dict()
+        outputs['features'] = features
+        outputs['feature_names'] = list(features.columns)
+        outputs['categorical_features'] = self._get_feature_names(categorical_feature_list)
+        return outputs
+
+    def _get_feature_names(self, dataframes):
+        feature_names = []
+        for dataframe in dataframes:
+            try:
+                feature_names.extend(list(dataframe.columns))
+            except Exception as e:
+                print(e)
+                feature_names.append(dataframe.name)
+
+        return feature_names
+
+    def _format_target(self, target):
+        if isinstance(target, pd.Series):
+            return pd.DataFrame(target)
+        return target
