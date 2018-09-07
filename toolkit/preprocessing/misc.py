@@ -5,6 +5,7 @@ from sklearn.preprocessing import Normalizer, MinMaxScaler
 from fancyimpute import SimpleFill
 import category_encoders as ce
 import pandas as pd
+import numpy as np
 
 from steppy.base import BaseTransformer
 
