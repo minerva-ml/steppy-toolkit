@@ -5,7 +5,7 @@ Here, at [minerva.ml](https://minerva.ml) we are creating Steppy - lightweight, 
 ### Get involved
 You are welcome to contribute to the Steppy-examples. To get started:
 1. Check [steppy core library kanban board](https://github.com/minerva-ml/steppy/projects/1) to see what we are working on right now.
-1. Express your interest in a paticular [issue](https://github.com/minerva-ml/steppy/issues) by submitting a comment or,
+1. Express your interest in a particular [issue](https://github.com/minerva-ml/steppy/issues) by submitting a comment or,
     * submit your own [issue](https://github.com/minerva-ml/steppy/issues).
 1. We will get back to you in order to start working together.
 
