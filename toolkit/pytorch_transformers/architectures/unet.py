@@ -3,7 +3,7 @@ import warnings
 import torch
 import torch.nn as nn
 
-from toolkit.pytorch_transformers.utils import get_downsample_pad, get_upsample_pad
+from toolkit.pytorch_transformers.architectures.utils import get_downsample_pad, get_upsample_pad
 
 
 class UNet(nn.Module):
@@ -244,6 +244,7 @@ class DownConv(nn.Module):
         self.kernel_size = kernel_size
         self.batch_norm = batch_norm
         self.dropout = dropout
+        self.conv_stride = 1
 
         self.down_conv = self._down_conv()
 
@@ -292,6 +293,7 @@ class UpConv(nn.Module):
         self.kernel_size = kernel_size
         self.batch_norm = batch_norm
         self.dropout = dropout
+        self.conv_stride = 1
 
         self.up_conv = self._up_conv()
 
