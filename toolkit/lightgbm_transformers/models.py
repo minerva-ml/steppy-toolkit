@@ -18,25 +18,34 @@ logger = get_logger()
 class LightGBM(BaseTransformer):
     """
     Accepts three dictionaries that reflects LightGBM API:
-      - booster_parameters  -> parameters of the Booster
-      - dataset_parameters  -> parameters of the lightgbm.Dataset class
-      - training_parameters -> parameters of the lightgbm.train function
+        - booster_parameters  -> parameters of the Booster
+          See: https://lightgbm.readthedocs.io/en/latest/Parameters.html
+        - dataset_parameters  -> parameters of the lightgbm.Dataset class
+          See: https://lightgbm.readthedocs.io/en/latest/Python-API.html#data-structure-api
+        - training_parameters -> parameters of the lightgbm.train function
+          See: https://lightgbm.readthedocs.io/en/latest/Python-API.html#training-api
     """
-    def __init__(self, booster_parameters, dataset_parameters, training_parameters):
+    def __init__(self,
+                 booster_parameters=None,
+                 dataset_parameters=None,
+                 training_parameters=None):
         super().__init__()
         logger.info('initializing LightGBM transformer')
-        isinstance(booster_parameters, dict), 'LightGBM transformer: booster_parameters must be dict, ' \
-                                              'got {} instead'.format(type(booster_parameters))
-        isinstance(dataset_parameters, dict), 'LightGBM transformer: dataset_parameters must be dict, ' \
-                                              'got {} instead'.format(type(dataset_parameters))
-        isinstance(training_parameters, dict), 'LightGBM transformer: training_parameters must be dict, ' \
-                                               'got {} instead'.format(type(training_parameters))
+        if booster_parameters is not None:
+            isinstance(booster_parameters, dict), 'LightGBM transformer: booster_parameters must be dict, ' \
+                                                  'got {} instead'.format(type(booster_parameters))
+        if dataset_parameters is not None:
+            isinstance(dataset_parameters, dict), 'LightGBM transformer: dataset_parameters must be dict, ' \
+                                                  'got {} instead'.format(type(dataset_parameters))
+        if training_parameters is not None:
+            isinstance(training_parameters, dict), 'LightGBM transformer: training_parameters must be dict, ' \
+                                                   'got {} instead'.format(type(training_parameters))
 
-        self.booster_parameters = booster_parameters
-        self.dataset_parameters = dataset_parameters
-        self.training_parameters = training_parameters
+        self.booster_parameters = booster_parameters or {}
+        self.dataset_parameters = dataset_parameters or {}
+        self.training_parameters = training_parameters or {}
 
-    def fit(self, X, y, X_valid, y_valid, **kwargs):
+    def fit(self, X, y, X_valid, y_valid):
         self._check_target_shape_and_type(y, 'y')
         self._check_target_shape_and_type(y_valid, 'y_valid')
         y = self._format_target(y)
@@ -53,14 +62,14 @@ class LightGBM(BaseTransformer):
         data_valid = lgb.Dataset(data=X_valid,
                                  label=y_valid,
                                  **self.dataset_parameters)
-        self.estimator = lgb.train(self.booster_parameters,
-                                   data_train,
+        self.estimator = lgb.train(params=self.booster_parameters,
+                                   train_set=data_train,
                                    valid_sets=[data_train, data_valid],
                                    valid_names=['data_train', 'data_valid'],
                                    **self.training_parameters)
         return self
 
-    def transform(self, X, y=None, **kwargs):
+    def transform(self, X, y=None):
         prediction = self.estimator.predict(X)
         return {'prediction': prediction}
 

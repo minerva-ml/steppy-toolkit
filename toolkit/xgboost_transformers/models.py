@@ -22,65 +22,67 @@ class XGBoostClassifierMultilabel(MultilabelEstimators):
 
 
 class XGBoost(BaseTransformer):
-    def __init__(self, **params):
+    """
+    Accepts three dictionaries that reflects XGBoost API:
+        - dmatrix_parameters  -> parameters of the xgboost.DMatrix class.
+          See: https://xgboost.readthedocs.io/en/latest/python/python_api.html#xgboost.DMatrix
+        - training_parameters -> parameters of the xgboost.train function.
+          See: https://xgboost.readthedocs.io/en/latest/python/python_api.html#xgboost.train
+        - predict_parameters -> parameters of the xgboost.Booster.predict function.
+          See: https://xgboost.readthedocs.io/en/latest/python/python_api.html#xgboost.Booster.predict
+        - booster_parameters  -> parameters of the Booster.
+          See: https://xgboost.readthedocs.io/en/latest/parameter.html
+    """
+    def __init__(self,
+                 dmatrix_parameters=None,
+                 training_parameters=None,
+                 predict_parameters=None,
+                 booster_parameters=None):
         super().__init__()
         logger.info('initializing XGBoost transformer')
-        self.params = params
-        self.training_params = ['nrounds', 'early_stopping_rounds']
-        self.evaluation_function = None
+        if dmatrix_parameters is not None:
+            isinstance(dmatrix_parameters, dict), 'XGBoost transformer: dmatrix_parameters must be dict, ' \
+                                                  'got {} instead'.format(type(dmatrix_parameters))
+        if training_parameters is not None:
+            isinstance(training_parameters, dict), 'XGBoost transformer: training_parameters must be dict, ' \
+                                                   'got {} instead'.format(type(training_parameters))
+        if predict_parameters is not None:
+            isinstance(predict_parameters, dict), 'XGBoost transformer: predict_parameters must be dict, ' \
+                                                  'got {} instead'.format(type(predict_parameters))
+        if booster_parameters is not None:
+            isinstance(booster_parameters, dict), 'XGBoost transformer: booster_parameters must be dict, ' \
+                                                  'got {} instead'.format(type(booster_parameters))
 
-    @property
-    def model_config(self):
-        return AttrDict({param: value for param, value in self.params.items()
-                         if param not in self.training_params})
+        self.dmatrix_parameters = dmatrix_parameters or {}
+        self.training_parameters = training_parameters or {}
+        self.predict_parameters = predict_parameters or {}
+        self.booster_parameters = booster_parameters or {}
 
-    @property
-    def training_config(self):
-        return AttrDict({param: value for param, value in self.params.items()
-                         if param in self.training_params})
-
-    def fit(self,
-            X, y,
-            X_valid, y_valid,
-            feature_names=None,
-            feature_types=None,
-            **kwargs):
-
+    def fit(self, X, y, X_valid, y_valid):
         logger.info('XGBoost, train data shape        {}'.format(X.shape))
         logger.info('XGBoost, validation data shape   {}'.format(X_valid.shape))
         logger.info('XGBoost, train labels shape      {}'.format(y.shape))
         logger.info('XGBoost, validation labels shape {}'.format(y_valid.shape))
 
-        train = xgb.DMatrix(X,
+        train = xgb.DMatrix(data=X,
                             label=y,
-                            feature_names=feature_names,
-                            feature_types=feature_types)
-        valid = xgb.DMatrix(X_valid,
+                            **self.dmatrix_parameters)
+        valid = xgb.DMatrix(data=X_valid,
                             label=y_valid,
-                            feature_names=feature_names,
-                            feature_types=feature_types)
-
-        evaluation_results = {}
-        self.estimator = xgb.train(params=self.model_config,
+                            **self.dmatrix_parameters)
+        self.estimator = xgb.train(params=self.booster_parameters,
                                    dtrain=train,
                                    evals=[(train, 'train'), (valid, 'valid')],
-                                   evals_result=evaluation_results,
-                                   num_boost_round=self.training_config.nrounds,
-                                   early_stopping_rounds=self.training_config.early_stopping_rounds,
-                                   verbose_eval=self.model_config.verbose,
-                                   feval=self.evaluation_function)
+                                   **self.training_parameters)
         return self
 
-    def transform(self, X, y=None, feature_names=None, feature_types=None, **kwargs):
-        X_DMatrix = xgb.DMatrix(X,
-                                label=y,
-                                feature_names=feature_names,
-                                feature_types=feature_types)
-        prediction = self.estimator.predict(X_DMatrix)
+    def transform(self, X, y=None):
+        X_DMatrix = xgb.DMatrix(X, label=y, **self.dmatrix_parameters)
+        prediction = self.estimator.predict(X_DMatrix, **self.predict_parameters)
         return {'prediction': prediction}
 
     def load(self, filepath):
-        self.estimator = xgb.Booster(params=self.model_config)
+        self.estimator = xgb.Booster(params=self.booster_parameters)
         self.estimator.load_model(filepath)
         return self
 
