@@ -1,12 +1,11 @@
+import category_encoders as ce
+import numpy as np
+import pandas as pd
 import sklearn.decomposition as decomposition
+from fancyimpute import SimpleFill
 from sklearn.externals import joblib
 from sklearn.feature_extraction import text
 from sklearn.preprocessing import Normalizer, MinMaxScaler
-from fancyimpute import SimpleFill
-import category_encoders as ce
-import pandas as pd
-import numpy as np
-
 from steppy.base import BaseTransformer
 
 
@@ -272,6 +271,7 @@ class GroupbyAggregate(BaseTransformer):
 
     def _create_colname_from_specs(self, groupby_cols, select, agg):
         return '{}_{}_{}'.format('_'.join(groupby_cols), agg, select)
+
 
 class FeatureJoiner(BaseTransformer):
     """Concatenate all features to one DataFrame of given id_column
