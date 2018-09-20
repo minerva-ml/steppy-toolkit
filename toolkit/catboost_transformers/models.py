@@ -37,7 +37,7 @@ class CatBoost(BaseTransformer):
         logger.info('Catboost, train labels shape      {}'.format(y.shape))
         logger.info('Catboost, validation labels shape {}'.format(y_valid.shape))
 
-        categorical_indeces = self._get_categorical_indeces(feature_names, categorical_features)
+        categorical_indeces = self._get_categorical_indices(feature_names, categorical_features)
         self.estimator.fit(X, y,
                            eval_set=(X_valid, y_valid),
                            cat_features=categorical_indeces)
@@ -54,7 +54,7 @@ class CatBoost(BaseTransformer):
     def persist(self, filepath):
         self.estimator.save_model(filepath)
 
-    def _get_categorical_indeces(self, feature_names, categorical_features):
+    def _get_categorical_indices(self, feature_names, categorical_features):
         if categorical_features:
             return [feature_names.index(feature) for feature in categorical_features]
         else:
