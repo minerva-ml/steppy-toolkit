@@ -2,10 +2,10 @@ try:
     import lightgbm as lgb
     import numpy as np
     import pandas as pd
-    from attrdict import AttrDict
     from sklearn.externals import joblib
     from steppy.base import BaseTransformer
     from steppy.utils import get_logger
+
     from toolkit.utils import SteppyToolkitError
 except ImportError as e:
     msg = 'SteppyToolkitError: you have missing modules. Install requirements specific to lightgbm_transformers.' \
@@ -16,60 +16,48 @@ logger = get_logger()
 
 
 class LightGBM(BaseTransformer):
-    def __init__(self, **params):
+    """
+    Accepts three dictionaries that reflects LightGBM API:
+      - booster_parameters  -> parameters of the Booster
+      - dataset_parameters  -> parameters of the lightgbm.Dataset class
+      - training_parameters -> parameters of the lightgbm.train function
+    """
+    def __init__(self, booster_parameters, dataset_parameters, training_parameters):
         super().__init__()
-        logger.info('initializing LightGBM...')
-        self.params = params
-        self.training_params = ['number_boosting_rounds', 'early_stopping_rounds']
+        logger.info('initializing LightGBM transformer')
+        isinstance(booster_parameters, dict), 'LightGBM transformer: booster_parameters must be dict, ' \
+                                              'got {} instead'.format(type(booster_parameters))
+        isinstance(dataset_parameters, dict), 'LightGBM transformer: dataset_parameters must be dict, ' \
+                                              'got {} instead'.format(type(dataset_parameters))
+        isinstance(training_parameters, dict), 'LightGBM transformer: training_parameters must be dict, ' \
+                                               'got {} instead'.format(type(training_parameters))
 
-    @property
-    def model_config(self):
-        return AttrDict({param: value for param, value in self.params.items()
-                         if param not in self.training_params})
+        self.booster_parameters = booster_parameters
+        self.dataset_parameters = dataset_parameters
+        self.training_parameters = training_parameters
 
-    @property
-    def training_config(self):
-        return AttrDict({param: value for param, value in self.params.items()
-                         if param in self.training_params})
-
-    def fit(self,
-            X, y,
-            X_valid, y_valid,
-            feature_names='auto',
-            categorical_features='auto',
-            **kwargs):
+    def fit(self, X, y, X_valid, y_valid, **kwargs):
         self._check_target_shape_and_type(y, 'y')
         self._check_target_shape_and_type(y_valid, 'y_valid')
         y = self._format_target(y)
         y_valid = self._format_target(y_valid)
-        evaluation_results = {}
 
-        logger.info('LightGBM, train data shape        {}'.format(X.shape))
-        logger.info('LightGBM, validation data shape   {}'.format(X_valid.shape))
-        logger.info('LightGBM, train labels shape      {}'.format(y.shape))
-        logger.info('LightGBM, validation labels shape {}'.format(y_valid.shape))
+        logger.info('LightGBM transformer, train data shape        {}'.format(X.shape))
+        logger.info('LightGBM transformer, validation data shape   {}'.format(X_valid.shape))
+        logger.info('LightGBM transformer, train labels shape      {}'.format(y.shape))
+        logger.info('LightGBM transformer, validation labels shape {}'.format(y_valid.shape))
 
         data_train = lgb.Dataset(data=X,
                                  label=y,
-                                 feature_name=feature_names,
-                                 categorical_feature=categorical_features,
-                                 **kwargs)
-        data_valid = lgb.Dataset(X_valid,
+                                 **self.dataset_parameters)
+        data_valid = lgb.Dataset(data=X_valid,
                                  label=y_valid,
-                                 feature_name=feature_names,
-                                 categorical_feature=categorical_features,
-                                 **kwargs)
-        self.estimator = lgb.train(self.model_config,
+                                 **self.dataset_parameters)
+        self.estimator = lgb.train(self.booster_parameters,
                                    data_train,
-                                   feature_name=feature_names,
-                                   categorical_feature=categorical_features,
                                    valid_sets=[data_train, data_valid],
                                    valid_names=['data_train', 'data_valid'],
-                                   evals_result=evaluation_results,
-                                   num_boost_round=self.training_config.number_boosting_rounds,
-                                   early_stopping_rounds=self.training_config.early_stopping_rounds,
-                                   verbose_eval=self.model_config.verbose,
-                                   **kwargs)
+                                   **self.training_parameters)
         return self
 
     def transform(self, X, y=None, **kwargs):
@@ -85,16 +73,10 @@ class LightGBM(BaseTransformer):
 
     def _check_target_shape_and_type(self, target, name):
         if not any([isinstance(target, obj_type) for obj_type in [pd.Series, np.ndarray, list]]):
-            raise TypeError(
-                '"target" must be "numpy.ndarray" or "Pandas.Series" or "list", got {} instead.'.format(
-                    type(target)))
-        try:
-            assert len(target.shape) == 1, '"{}" must be 1-D. It is {}-D instead.'.format(name,
-                                                                                          len(target.shape))
-        except AttributeError:
-            print('Cannot determine shape of the {}. '
-                  'Type must be "numpy.ndarray" or "Pandas.Series" or "list", got {} instead'.format(name,
-                                                                                                     type(target)))
+            msg = '"target" must be "numpy.ndarray" or "Pandas.Series" or "list", got {} instead.'.format(type(target))
+            raise SteppyToolkitError(msg)
+        if not isinstance(target, list):
+            assert len(target.shape) == 1, '"{}" must be 1-D. It is {}-D instead.'.format(name, len(target.shape))
 
     def _format_target(self, target):
         if isinstance(target, pd.Series):
