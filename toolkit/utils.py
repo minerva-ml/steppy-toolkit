@@ -1,11 +1,11 @@
 import os
 import time
 
+import imgaug as ia
 import numpy as np
 from PIL import Image
-from pycocotools import mask as cocomask
 from imgaug import augmenters as iaa
-import imgaug as ia
+from pycocotools import mask as cocomask
 
 
 def from_pil(*images):
@@ -31,6 +31,10 @@ def rle_from_binary(prediction):
 
 def binary_from_rle(rle):
     return cocomask.decode(rle)
+
+
+class SteppyToolkitError(Exception):
+    pass
 
 
 class ImgAug:
