@@ -44,21 +44,21 @@ class Callback:
     def on_epoch_end(self, *args, **kwargs):
         self.epoch_id += 1
 
-    def training_break(self, *args, **kwargs):
-        return False
-
     def on_batch_begin(self, *args, **kwargs):
         pass
 
     def on_batch_end(self, *args, **kwargs):
         self.batch_id += 1
 
+    def training_break(self, *args, **kwargs):
+        return False
+
     def get_validation_loss(self):
-        if self.validation_loss is None:
-            self.validation_loss = {}
-        return self.validation_loss.setdefault(self.epoch_id, score_model(self.model,
-                                                                          self.loss_function,
-                                                                          self.validation_datagen))
+        if self.epoch_id not in self.validation_loss.keys():
+            self.validation_loss[self.epoch_id] = score_model(self.model,
+                                                              self.loss_function,
+                                                              self.validation_datagen)
+        return self.validation_loss[self.epoch_id]
 
 
 class CallbackList:
@@ -93,10 +93,6 @@ class CallbackList:
         for callback in self.callbacks:
             callback.on_epoch_end(*args, **kwargs)
 
-    def training_break(self, *args, **kwargs):
-        callback_out = [callback.training_break(*args, **kwargs) for callback in self.callbacks]
-        return any(callback_out)
-
     def on_batch_begin(self, *args, **kwargs):
         for callback in self.callbacks:
             callback.on_batch_begin(*args, **kwargs)
@@ -104,6 +100,10 @@ class CallbackList:
     def on_batch_end(self, *args, **kwargs):
         for callback in self.callbacks:
             callback.on_batch_end(*args, **kwargs)
+
+    def training_break(self, *args, **kwargs):
+        callback_out = [callback.training_break(*args, **kwargs) for callback in self.callbacks]
+        return any(callback_out)
 
 
 class TrainingMonitor(Callback):
@@ -176,8 +176,9 @@ class EarlyStopping(Callback):
         self.minimize = minimize
         self.best_score = None
         self.epoch_since_best = 0
+        self._training_break = False
 
-    def training_break(self, *args, **kwargs):
+    def on_epoch_end(self, *args, **kwargs):
         self.model.eval()
         val_loss = self.get_validation_loss()
         loss_sum = val_loss['sum']
@@ -195,9 +196,12 @@ class EarlyStopping(Callback):
             self.epoch_since_best += 1
 
         if self.epoch_since_best > self.patience:
-            return True
-        else:
-            return False
+            self._training_break = True
+
+        self.epoch_id += 1
+
+    def training_break(self, *args, **kwargs):
+        return self._training_break
 
 
 class ExponentialLRScheduler(Callback):
