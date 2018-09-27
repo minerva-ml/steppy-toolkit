@@ -1,0 +1,2 @@
+class SteppyToolkitError(Exception):
+    pass

@@ -6,7 +6,7 @@ try:
     from steppy.base import BaseTransformer
     from steppy.utils import get_logger
 
-    from toolkit.utils import SteppyToolkitError
+    from toolkit.toolkit_base import SteppyToolkitError
 except ImportError as e:
     msg = 'SteppyToolkitError: you have missing modules. Install requirements specific to lightgbm_transformers.' \
           'Use this file: toolkit/lightgbm_transformers/requirements.txt'
