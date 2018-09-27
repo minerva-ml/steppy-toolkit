@@ -6,7 +6,7 @@ try:
     from xgboost import XGBClassifier
 
     from toolkit.sklearn_transformers.models import MultilabelEstimators
-    from toolkit.utils import SteppyToolkitError
+    from toolkit.toolkit_base import SteppyToolkitError
 except ImportError as e:
     msg = 'SteppyToolkitError: you have missing modules. Install requirements specific to xgboost_transformers.' \
           'Use this file: toolkit/xgboost_transformers/requirements.txt'

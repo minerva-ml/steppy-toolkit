@@ -33,10 +33,6 @@ def binary_from_rle(rle):
     return cocomask.decode(rle)
 
 
-class SteppyToolkitError(Exception):
-    pass
-
-
 class ImgAug:
     def __init__(self, augmenters):
         if not isinstance(augmenters, list):

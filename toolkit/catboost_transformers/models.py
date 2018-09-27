@@ -5,7 +5,7 @@ try:
     from steppy.utils import get_logger
 
     from toolkit.sklearn_transformers.models import MultilabelEstimators
-    from toolkit.utils import SteppyToolkitError
+    from toolkit.toolkit_base import SteppyToolkitError
 except ImportError as e:
     msg = 'SteppyToolkitError: you have missing modules. Install requirements specific to catboost_transformers.' \
           'Use this file: toolkit/catboost_transformers/requirements.txt'
