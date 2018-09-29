@@ -69,7 +69,7 @@ class LightGBM(BaseTransformer):
                                    **self.training_parameters)
         return self
 
-    def transform(self, X, y=None):
+    def transform(self, X, y=None, **kwargs):
         prediction = self.estimator.predict(X)
         return {'prediction': prediction}
 
