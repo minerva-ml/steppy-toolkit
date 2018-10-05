@@ -5,7 +5,7 @@
 
    generated/modules.rst
 
-API documentation
+API documentation 
 ~~~~~~~~~~~~~~~~~
 
 * :ref:`genindex`

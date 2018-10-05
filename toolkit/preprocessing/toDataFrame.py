@@ -1,13 +1,13 @@
 import pandas as pd
 import copy, random
 import numpy as np
-# steppy immports
+# steppy imports
 from steppy.base import Step, BaseTransformer, make_transformer
 from steppy.adapter import Adapter, E
 from steppy.utils import get_logger
 __author__ = 'Bruce_H_Cottman'
 __license__ = 'MIT License'
-
+#
 
 class toDataFrame(BaseTransformer):
     """

@@ -4,6 +4,7 @@ import copy, random
 import numpy as np
 import pytest
 # steppy imports
+#
 from steppy.base import Step, IdentityOperation, StepsError, make_transformer
 from steppy.adapter import Adapter, E
 

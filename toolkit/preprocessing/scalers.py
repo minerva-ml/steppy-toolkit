@@ -34,7 +34,7 @@ __ScalerDict__['MaxAbsScaler'] = MaxAbsScaler
 __ScalerDict__['RobustScaler'] = RobustScaler
 __ScalerDict__['QuantileTransformer'] = QuantileTransformer
 #__ScalerDict__['self'] = skpr.__all__,
-########
+#######
 logger = get_logger()
 # Coefficent Functions
 @jit
