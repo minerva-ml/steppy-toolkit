@@ -1,3 +1,5 @@
+from toolkit.toolkit_base import SteppyToolkitError
+
 try:
     import lightgbm as lgb
     import numpy as np
@@ -5,8 +7,6 @@ try:
     from sklearn.externals import joblib
     from steppy.base import BaseTransformer
     from steppy.utils import get_logger
-
-    from toolkit.toolkit_base import SteppyToolkitError
 except ImportError as e:
     msg = 'SteppyToolkitError: you have missing modules. Install requirements specific to lightgbm_transformers.' \
           'Use this file: toolkit/lightgbm_transformers/requirements.txt'
@@ -69,7 +69,7 @@ class LightGBM(BaseTransformer):
                                    **self.training_parameters)
         return self
 
-    def transform(self, X, y=None, **kwargs):
+    def transform(self, X, **kwargs):
         prediction = self.estimator.predict(X)
         return {'prediction': prediction}
 

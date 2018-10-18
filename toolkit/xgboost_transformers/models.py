@@ -1,3 +1,5 @@
+from toolkit.toolkit_base import SteppyToolkitError
+
 try:
     import xgboost as xgb
     from attrdict import AttrDict
@@ -6,7 +8,6 @@ try:
     from xgboost import XGBClassifier
 
     from toolkit.sklearn_transformers.models import MultilabelEstimators
-    from toolkit.toolkit_base import SteppyToolkitError
 except ImportError as e:
     msg = 'SteppyToolkitError: you have missing modules. Install requirements specific to xgboost_transformers.' \
           'Use this file: toolkit/xgboost_transformers/requirements.txt'
@@ -76,7 +77,7 @@ class XGBoost(BaseTransformer):
                                    **self.training_parameters)
         return self
 
-    def transform(self, X, y=None):
+    def transform(self, X, y=None, **kwargs):
         X_DMatrix = xgb.DMatrix(X, label=y, **self.dmatrix_parameters)
         prediction = self.estimator.predict(X_DMatrix, **self.predict_parameters)
         return {'prediction': prediction}
