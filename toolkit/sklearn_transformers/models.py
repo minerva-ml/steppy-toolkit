@@ -29,7 +29,7 @@ class SklearnBaseTransformer(BaseTransformer):
 
 
 class SklearnClassifier(SklearnBaseTransformer):
-    RESULT_KEY = 'predicted'
+    RESULT_KEY = 'prediction'
 
     def transform(self, X, y=None, **kwargs):
         prediction = self.estimator.predict_proba(X)
@@ -37,7 +37,7 @@ class SklearnClassifier(SklearnBaseTransformer):
 
 
 class SklearnRegressor(SklearnBaseTransformer):
-    RESULT_KEY = 'predicted'
+    RESULT_KEY = 'prediction'
 
     def transform(self, X, y=None, **kwargs):
         prediction = self.estimator.predict(X)
